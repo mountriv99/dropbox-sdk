@@ -71,8 +71,8 @@ module Dropbox # :nodoc:
       end
     end
 
-    #We use this to better understand how developers are using our SDKs.
-    request['User-Agent'] =  "OfficialDropboxRubySDK/#{Dropbox::SDK_VERSION}"
+    # We use this to better understand how developers are using our SDKs.
+    # request['User-Agent'] =  "OfficialDropboxRubySDK/#{Dropbox::SDK_VERSION}"
 
     begin
       http.request(request)
