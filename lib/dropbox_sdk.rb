@@ -47,30 +47,7 @@ module Dropbox # :nodoc:
     http.verify_mode = OpenSSL::SSL::VERIFY_PEER
     http.ca_file = Dropbox::TRUSTED_CERT_FILE
     http.read_timeout = 600
-
-    if RUBY_VERSION >= '1.9'
-      # SSL protocol and ciphersuite settings are supported strating with version 1.9
-      http.ssl_version = 'TLSv1'
-      http.ciphers = 'ECDHE-RSA-AES256-GCM-SHA384:'\
-        'ECDHE-RSA-AES256-SHA384:'\
-        'ECDHE-RSA-AES256-SHA:'\
-        'ECDHE-RSA-AES128-GCM-SHA256:'\
-        'ECDHE-RSA-AES128-SHA256:'\
-        'ECDHE-RSA-AES128-SHA:'\
-        'ECDHE-RSA-RC4-SHA:'\
-        'DHE-RSA-AES256-GCM-SHA384:'\
-        'DHE-RSA-AES256-SHA256:'\
-        'DHE-RSA-AES256-SHA:'\
-        'DHE-RSA-AES128-GCM-SHA256:'\
-        'DHE-RSA-AES128-SHA256:'\
-        'DHE-RSA-AES128-SHA:'\
-        'AES256-GCM-SHA384:'\
-        'AES256-SHA256:'\
-        'AES256-SHA:'\
-        'AES128-GCM-SHA256:'\
-        'AES128-SHA256:'\
-        'AES128-SHA'
-    end
+    http.ssl_version = 'TLSv1_2'
 
     # Important security note!
     # Some Ruby versions (e.g. the one that ships with OS X) do not raise
