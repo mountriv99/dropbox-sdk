@@ -21,7 +21,7 @@ module Dropbox # :nodoc:
   }
 
   API_VERSION = 1
-  SDK_VERSION = "1.6.5"
+  SDK_VERSION = "1.6.6"
 
   TRUSTED_CERT_FILE = File.join(File.dirname(__FILE__), 'trusted-certs.crt')
 
