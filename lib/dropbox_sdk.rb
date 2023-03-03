@@ -418,6 +418,7 @@ class DropboxOAuth2FlowBase  # :nodoc:
       "redirect_uri" => redirect_uri,
       "state" => state,
       "locale" => @locale,
+      "token_access_type" => "offline"
     }
 
     host = Dropbox::WEB_SERVER
@@ -453,7 +454,7 @@ class DropboxOAuth2FlowBase  # :nodoc:
     response = Dropbox::do_http(uri, request)
 
     j = Dropbox::parse_response(response)
-    ["token_type", "access_token", "uid"].each { |k|
+    ["token_type", "access_token", "uid", "refresh_token"].each { |k|
       if not j.has_key?(k)
         raise DropboxError.new("Bad response from /token: missing \"#{k}\".")
       end
@@ -465,7 +466,7 @@ class DropboxOAuth2FlowBase  # :nodoc:
       raise DropboxError.new("Bad response from /token: \"token_type\" is \"#{token_type}\".")
     end
 
-    return j['access_token'], j['uid']
+    return j['access_token'], j['uid'], j['refresh_token']
   end
 end
 
@@ -556,9 +557,10 @@ class DropboxOAuth2Flow < DropboxOAuth2FlowBase
   #
   # * query_params: The query params on the GET request to your redirect URI.
   #
-  # Returns a tuple of (access_token, user_id, url_state).  access_token can be used to
+  # Returns a tuple of (access_token, user_id, refresh_token, url_state).  access_token can be used to
   # construct a DropboxClient.  user_id is the Dropbox user ID of the user that jsut approved
-  # your app.  url_state is the value you originally passed in to start().
+  # your app.  refresh token is needed to create a long-lived way to access the Dropbox API.
+  # url_state is the value you originally passed in to start().
   #
   # Can throw BadRequestError, BadStateError, CsrfError, NotApprovedError,
   # ProviderError, and the standard DropboxError.
@@ -628,8 +630,8 @@ class DropboxOAuth2Flow < DropboxOAuth2FlowBase
 
     # If everything went ok, make the network call to get an access token.
 
-    access_token, user_id = _finish(code, @redirect_uri)
-    return access_token, user_id, url_state
+    access_token, user_id, refresh_token = _finish(code, @redirect_uri)
+    return access_token, user_id, refresh_token, url_state
   end
 
   # Thrown if the redirect URL was missing parameters or if the given parameters were not valid.
