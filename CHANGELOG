@@ -1,5 +1,9 @@
 * Add support for /previews endpoint.
 
+1.7.0 (2023-03-04)
+* added "offline" as token_access_type to the authorize_url to get a refresh_token
+* BREAKING CHANGE: DropboxOAuth2Flow.finish returns an additional refresh_token
+
 1.6.5 (2015-7-28)
 * Update SDK to include a few new fixes
 * Sync up github and rubygems version of this SDK
