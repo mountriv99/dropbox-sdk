@@ -659,6 +659,36 @@ class DropboxOAuth2Flow < DropboxOAuth2FlowBase
   class ProviderError < Exception; end
 end
 
+class DropboxOAuth2RefreshTokenFlow < DropboxOAuth2FlowBase
+
+  # Call this to get a new access_token from the refresh_token.
+  # https://www.dropbox.com/developers/documentation/http/documentation#oauth2-token
+  #
+  # e.g. DropboxOAuth2RefreshTokenFlow.new(consumer_key, consumer_secret).refresh_access_token(refresh_token)
+  #
+  # Params:
+  # - refresh_token: String. A unique, long-lived token that can be used to request new short-lived
+  #   access tokens without direct interaction from a user in your app, obtained from calling finish()
+  #
+  # Returns:
+  # - access_token: String. The access token to be used to call the Dropbox API.
+  #
+  # Can throw BadRequestError, BadStateError, CsrfError, NotApprovedError,
+  # ProviderError, and the standard DropboxError.
+  def refresh_access_token(refresh_token)
+    uri = URI.parse("https://#{Dropbox::API_SERVER}/oauth2/token")
+    request = Net::HTTP::Post.new(uri.request_uri)
+    request.add_field('Authorization', 'Basic ' + Base64.encode64("#{@consumer_key}:#{@consumer_secret}").chomp("\n"))
+    request.set_form_data(
+      "grant_type" => "refresh_token",
+      "refresh_token" => refresh_token
+    )
+    j = Dropbox::parse_response(Dropbox::do_http(uri, request))
+    ["access_token", "expires_in"].each{|k| raise DropboxError.new("Bad response from /token: missing \"#{k}\".") unless j.has_key?(k)}
+    j['access_token']
+  end
+
+end
 
 # A class that represents either an OAuth request token or an OAuth access token.
 class OAuthToken # :nodoc:
